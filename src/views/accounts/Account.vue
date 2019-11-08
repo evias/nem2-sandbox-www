@@ -1,9 +1,9 @@
 <template>
   <b-row>
-    <b-col cols="12" lg="6">
+    <b-col cols="12" lg="12">
       <b-card no-header>
         <template slot="header">
-          User id:  {{ $route.params.id }}
+          Account:  {{ $route.params.id }}
         </template>
         <b-table striped small fixed responsive="sm" :items="items($route.params.id)" :fields="fields">
           <template slot="value" slot-scope="data">
@@ -19,19 +19,19 @@
 </template>
 
 <script>
-import usersData from './UsersData'
+import accountsData from './AccountsData'
 export default {
-  name: 'User',
+  name: 'Account',
   props: {
     caption: {
       type: String,
-      default: 'User id'
+      default: 'Account id'
     },
   },
   data: () => {
     return {
       items: (id) => {
-        const user = usersData.find( user => user.id.toString() === id)
+        const user = accountsData.find( user => user.id.toString() === id)
         const userDetails = user ? Object.entries(user) : [['id', 'Not found']]
         return userDetails.map(([key, value]) => {return {key: key, value: value}})
       },

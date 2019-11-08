@@ -1,6 +1,6 @@
 <template>
   <b-row>
-    <b-col cols="12" xl="6">
+    <b-col cols="12" xl="12">
       <transition name="slide">
       <b-card>
         <div slot="header" v-html="caption"></div>
@@ -8,11 +8,14 @@
           <template slot="id" slot-scope="data">
             <strong>{{data.item.id}}</strong>
           </template>
+          <template slot="networkType" slot-scope="data">
+            <b-badge :variant="getBadge(data.item.networkType)">{{data.item.networkType}}</b-badge>
+          </template>
           <template slot="name" slot-scope="data">
             <strong>{{data.item.name}}</strong>
           </template>
-          <template slot="status" slot-scope="data">
-            <b-badge :variant="getBadge(data.item.status)">{{data.item.status}}</b-badge>
+          <template slot="address" slot-scope="data">
+            <strong>{{data.item.address}}</strong>
           </template>
         </b-table>
         <nav>
@@ -25,13 +28,13 @@
 </template>
 
 <script>
-import usersData from './UsersData'
+import accountsData from './AccountsData'
 export default {
-  name: 'Users',
+  name: 'Accounts',
   props: {
     caption: {
       type: String,
-      default: 'Users'
+      default: 'Accounts'
     },
     hover: {
       type: Boolean,
@@ -56,37 +59,33 @@ export default {
   },
   data: () => {
     return {
-      items: usersData.filter((user) => user.id < 42),
+      items: accountsData,
       fields: [
         {key: 'id'},
+        {key: 'networkType'},
         {key: 'name'},
-        {key: 'registered'},
-        {key: 'role'},
-        {key: 'status'}
+        {key: 'address'},
       ],
       currentPage: 1,
-      perPage: 5,
+      perPage: 10,
       totalRows: 0
     }
   },
   computed: {
   },
   methods: {
-    getBadge (status) {
-      return status === 'Active' ? 'success'
-        : status === 'Inactive' ? 'secondary'
-          : status === 'Pending' ? 'warning'
-            : status === 'Banned' ? 'danger' : 'primary'
+    getBadge (networkType) {
+      return networkType === 'MIJIN_TEST' ? 'secondary' : 'primary'
     },
     getRowCount (items) {
       return items.length
     },
-    userLink (id) {
-      return `users/${id.toString()}`
+    accountLink (id) {
+      return `accounts/${id.toString()}`
     },
     rowClicked (item) {
-      const userLink = this.userLink(item.id)
-      this.$router.push({path: userLink})
+      const accountLink = this.accountLink(item.id)
+      this.$router.push({path: accountLink})
     }
 
   }
