@@ -12,6 +12,9 @@
         <b-nav-item class="px-3" to="/settings">Settings</b-nav-item>
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
+        <ApiNodeSelector />
+      </b-navbar-nav>
+      <b-navbar-nav class="ml-auto">
         <DefaultHeaderDropdownAccnt/>
       </b-navbar-nav>
       <AsideToggler class="d-none d-lg-block" />
@@ -21,6 +24,7 @@
 <script>
 import { Header as AppHeader, SidebarToggler, AsideToggler } from '@coreui/vue'
 import DefaultHeaderDropdownAccnt from './DefaultHeaderDropdownAccnt'
+import ApiNodeSelector from '@/views/components/ApiNodeSelector.vue'
 
 export default {
   name: 'DefaultHeader',
@@ -28,7 +32,8 @@ export default {
     AsideToggler,
     AppHeader,
     DefaultHeaderDropdownAccnt,
-    SidebarToggler
+    SidebarToggler,
+    ApiNodeSelector,
   }
 }
 </script>

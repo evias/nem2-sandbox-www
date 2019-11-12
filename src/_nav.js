@@ -84,5 +84,10 @@ export default {
       url: '/sandbox/qrcodes',
       icon: 'icon-puzzle'
     },
+    {
+      name: 'Network Spammer',
+      url: '/sandbox/spammer',
+      icon: 'icon-chart'
+    },
   ]
 }

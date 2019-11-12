@@ -4,7 +4,24 @@
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  data: () => {
+    return {
+      info: 1
+    }
+  },
+  created() {
+    this.initialize()
+  },
+  methods: {
+    initialize() {
+      this.$store.dispatch('network/initialize')
+          .catch(error => console.log(error))
+    },
+    uninitialize() {
+      this.$store.dispatch('uninitialize')
+    }
+  }
 }
 </script>
 

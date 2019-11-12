@@ -2,7 +2,6 @@
 import { Line } from 'vue-chartjs'
 import { getStyle, hexToRgba } from '@coreui/coreui/dist/js/coreui-utilities'
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips'
-import { random } from '@/shared/utils'
 
 export default {
   extends: Line,
@@ -18,8 +17,8 @@ export default {
     const data3 = []
 
     for (let i = 0; i <= elements; i++) {
-      data1.push(random(50, 200))
-      data2.push(random(80, 100))
+      data1.push(Math.random(50, 200))
+      data2.push(Math.random(80, 100))
       data3.push(65)
     }
     this.renderChart({

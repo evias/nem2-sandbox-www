@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // Containers
-const DefaultContainer = () => import('@/containers/DefaultContainer')
+const DefaultContainer = () => import('@/views/containers/DefaultContainer')
 
 // Views
 const Dashboard = () => import('@/views/Dashboard')
@@ -12,6 +12,7 @@ const WalletMonitor = () => import('@/views/wallet/WalletMonitor')
 const Accounts = () => import('@/views/accounts/Accounts')
 const Account = () => import('@/views/accounts/Account')
 const QRCodes = () => import('@/views/sandbox/QRCodes')
+const Spammer = () => import('@/views/sandbox/Spammer')
 
 // Views - Pages
 const Page404 = () => import('@/views/pages/Page404')
@@ -85,6 +86,11 @@ function configRoutes() {
           name: 'QR Codes',
           component: QRCodes
         },
+        {
+          path: 'spammer',
+          name: 'Network Spammer',
+          component: Spammer
+        },
       ]
     },
     {
@@ -106,7 +112,13 @@ function configRoutes() {
           component: Page500
         },
       ]
-    }
+    },
+    // redirect anything else to 404
+    {
+      path: '*',
+      name: '404',
+      component: Page404
+    },
   ]
 }
 

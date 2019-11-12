@@ -1,0 +1,45 @@
+{
+  "defaultNode": {
+    "protocol": "http",
+    "hostname": "api-01.mt.eu-central-1.nemtech.network",
+    "port": 3000,
+    "url": "http://api-01.mt.eu-central-1.nemtech.network:3000"
+  },
+  "networks": {
+    "testnet-mijinTest": {
+      "generationHash": "17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB",
+      "currencyMosaic": "nem.xem",
+      "harvestMosaic": "nem.xem",
+      "networkType": "mijinTest",
+      "nodes": [
+        "http://api-01.mt.eu-central-1.nemtech.network:3000",
+        "http://api-01.mt.eu-west-1.nemtech.network:3000",
+        "http://api-01.mt.ap-northeast-1.nemtech.network:3000",
+        "http://api-01.mt.us-east-1.nemtech.network:3000",
+        "http://api-01.mt.us-west-2.nemtech.network:3000"
+      ]
+    },
+    "testnet-publicTest": {
+      "generationHash": "988C4CDCE4D188013C13DE7914C7FD4D626169EF256722F61C52EFBE06BD5A2C",
+      "currencyMosaic": "nem.xem",
+      "harvestMosaic": "nem.xem",
+      "networkType": "publicTest",
+      "nodes": [
+        "http://api-01.eu-central-1.nemtech.network:3000",
+        "http://api-01.eu-west-1.nemtech.network:3000",
+        "http://api-01.ap-northeast-1.nemtech.network:3000",
+        "http://api-01.us-east-1.nemtech.network:3000",
+        "http://api-01.us-west-2.nemtech.network:3000"
+      ]
+    },
+    "local-private-network": {
+      "generationHash": "",
+      "currencyMosaic": "cat.currency",
+      "harvestMosaic": "cat.currency",
+      "networkType": "mijinTest",
+      "nodes": [
+        "http://localhost:3000"
+      ]
+    }
+  }
+}

@@ -1,5 +1,6 @@
 module.exports = {
   lintOnSave: false,
   runtimeCompiler: true,
-  publicPath: '/'
+  publicPath: '/',
+  outputDir: 'dist'
 }
