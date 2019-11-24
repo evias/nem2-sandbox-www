@@ -1,5 +1,6 @@
 
 import {NetworkType} from 'nem2-sdk'
+import moment from 'moment'
 
 class Helpers {
   static validURL(_str) {
@@ -46,6 +47,12 @@ class Helpers {
     else if (networkType === NetworkType.MAIN_NET) {
       return 'MAIN_NET'
     }
+  }
+
+  static timestampToTime(timestamp) {
+    return moment.utc(
+      (timestamp / 1000 + 1459468800) * 1000
+    ).local().format('YYYY-MM-DD HH:mm:ss')
   }
 }
 

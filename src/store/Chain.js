@@ -14,6 +14,8 @@ export default {
     height: 0,
     numTransactions: 0,
     numPublicAccounts: 0,
+    // Subscription to new blocks.
+    subscription: null,
   },
   mutations: {
     setInitialized: (state, initialized) => { state.initialized = initialized },
@@ -24,6 +26,7 @@ export default {
     height: state => state.height,
     numTransactions: state => state.numTransactions,
     numPublicAccounts: state => state.numPublicAccounts,
+    getSubscription: state => state.subscription,
   },
   actions: {
     async initialize({ commit, dispatch, getters }) {
@@ -37,21 +40,37 @@ export default {
         })
 
         // 2) open websocket connection
-        CatapultWebsocket.listener.open().then(() => {
-          CatapultWebsocket.listener.newBlock().subscribe((block) => {
-            commit('mutate', {key: 'height', value: block.height.compact()})
-          });
-        });
-
+        dispatch('subscribe')
         commit('setInitialized', true)
       }
       await AwaitLock.initialize(callback, commit, dispatch, getters)
     },
     async uninitialize({ commit, dispatch, getters }) {
       const callback = async () => {
+        dispatch('unsubscribe')
         commit('setInitialized', false)
       }
       await AwaitLock.uninitialize(callback, commit, dispatch, getters)
+    },
+/**
+ * Websocket API
+ */
+    // Subscribe to the latest blocks.
+    async subscribe({ commit, getters }) {
+      if (getters.getSubscription === null) {
+        let subscription = await CatapultWebsocket.subscribeNewBlock(commit, CatapultHttp.websocketUrl)
+        commit('mutate', {key: 'subscription', value: subscription})
+      }
+    },
+
+    // Unsubscribe from the latest blocks.
+    unsubscribe({ commit, getters }) {
+      let subscription = getters.getSubscription
+      if (subscription !== null) {
+        subscription[1].unsubscribe()
+        subscription[0].close()
+        commit('mutate', {key: 'subscription', value: null})
+      }
     }
   }
 };

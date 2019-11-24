@@ -17,7 +17,7 @@
       </main>
       <AppAside fixed>
         <!--aside-->
-        <DefaultAside/>
+        <NotificationSidebar/>
       </AppAside>
     </div>
     <DefaultFooter/>
@@ -27,7 +27,7 @@
 <script>
 import nav from '@/_nav'
 import { Sidebar as AppSidebar, SidebarFooter, SidebarForm, SidebarHeader, SidebarMinimizer, SidebarNav, Aside as AppAside, Breadcrumb } from '@coreui/vue'
-import DefaultAside from '@/components/containers/DefaultAside'
+import NotificationSidebar from '@/components/containers/NotificationSidebar'
 import DefaultHeaderDropdownAccnt from '@/components/containers/DefaultHeaderDropdownAccnt'
 import DefaultHeader from '@/components/containers/DefaultHeader'
 import DefaultFooter from '@/components/containers/DefaultFooter'
@@ -38,7 +38,7 @@ export default {
     AppSidebar,
     AppAside,
     Breadcrumb,
-    DefaultAside,
+    NotificationSidebar,
     DefaultHeaderDropdownAccnt,
     SidebarForm,
     SidebarFooter,
@@ -55,6 +55,9 @@ export default {
   },
   created() {
     this.initialize()
+  },
+  destroyed() {
+    this.uninitialize()
   },
   computed: {
     name() {

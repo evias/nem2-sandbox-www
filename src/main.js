@@ -12,6 +12,9 @@ import store from './store'
 
 Vue.use(BootstrapVue)
 
+// Create an event bus
+export const eventBus = new Vue();
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

@@ -33,9 +33,9 @@
     "flag-icon-css": "^3.3.0",
     "font-awesome": "^4.7.0",
     "lodash": "4.17.15",
-    "nem2-hd-wallets": "^0.4.2",
-    "nem2-qr-library": "^0.5.2",
-    "nem2-sdk": "^0.14.4",
+    "nem2-hd-wallets": "^0.6.0",
+    "nem2-qr-library": "^0.6.0",
+    "nem2-sdk": "^0.15.0",
     "nem2-uri-scheme": "^0.3.3",
     "perfect-scrollbar": "^1.4.0",
     "simple-line-icons": "^2.4.1",
@@ -45,7 +45,8 @@
     "vue-chartjs": "^3.4.2",
     "vue-perfect-scrollbar": "^0.1.0",
     "vue-router": "^3.0.6",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "moment-timezone": "^0.5.26"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.8.0",

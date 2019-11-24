@@ -3,7 +3,6 @@ import { NetworkType } from 'nem2-sdk';
 
 // internal dependencies
 import CatapultHttp from '../infrastructure/CatapultHttp.js';
-import CatapultWebsocket from '../infrastructure/CatapultWebsocket.js';
 import Helpers from '../Helpers.js';
 
 import Lock from './Lock.js';
@@ -79,14 +78,6 @@ export default {
         try {
           await CatapultHttp.init(nodeUrl)
           commit('mutate', {key: 'isConnected', value: true})
-        }
-        catch (e) {
-          console.log("Error in Store network/initialize: ", e)
-        }
-
-        //XXX bug in REST with websockets
-        try {
-          await CatapultWebsocket.init(CatapultHttp)
         }
         catch (e) {
           console.log("Error in Store network/initialize: ", e)

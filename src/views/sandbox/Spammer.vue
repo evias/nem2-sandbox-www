@@ -43,8 +43,8 @@ import {
 } from 'nem2-sdk'
 
 // internal deps
-import AccountInput from '@/components/AccountInput.vue'
-import PublicAccountInput from '@/components/PublicAccountInput.vue'
+import AccountInput from '@/components/nem2/AccountInput.vue'
+import PublicAccountInput from '@/components/nem2/PublicAccountInput.vue'
 
 export default {
   name: 'spammer',
@@ -54,8 +54,6 @@ export default {
   },
   data: () => {
     return { 
-      networkType: NetworkType.MIJIN_TEST,
-      generationHash: '17FA4747F5014B50413CCF968749604D728D7065DC504291EEE556899A534CBB',
       spammer: '',
       recipient: '',
     };

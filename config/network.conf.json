@@ -1,9 +1,9 @@
 {
   "defaultNode": {
     "protocol": "http",
-    "hostname": "api-01.mt.eu-central-1.nemtech.network",
+    "hostname": "test-api-01.us-west-1.nemtech.network",
     "port": 3000,
-    "url": "http://api-01.mt.eu-central-1.nemtech.network:3000"
+    "url": "http://test-api-01.us-west-1.nemtech.network:3000"
   },
   "networks": {
     "testnet-mijinTest": {
@@ -30,6 +30,15 @@
         "http://api-01.ap-northeast-1.nemtech.network:3000",
         "http://api-01.us-east-1.nemtech.network:3000",
         "http://api-01.us-west-2.nemtech.network:3000"
+      ]
+    },
+    "testnet-fushicho2": {
+      "generationHash": "FD7FC7FB73F6914E481EC55D5241D096F4027B712900C9C056345AE9554883D5",
+      "currencyMosaic": "nem.xem",
+      "harvestMosaic": "nem.xem",
+      "networkType": "publicTest",
+      "nodes": [
+        "http://test-api-01.us-west-1.nemtech.network:3000"
       ]
     },
     "local-private-network": {
