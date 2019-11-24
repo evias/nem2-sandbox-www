@@ -43,8 +43,8 @@ import {
 } from 'nem2-sdk'
 
 // internal deps
-import AccountInput from '@/views/components/AccountInput.vue'
-import PublicAccountInput from '@/views/components/PublicAccountInput.vue'
+import AccountInput from '@/components/AccountInput.vue'
+import PublicAccountInput from '@/components/PublicAccountInput.vue'
 
 export default {
   name: 'spammer',

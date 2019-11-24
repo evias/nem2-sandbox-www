@@ -1,21 +1,72 @@
 <template>
-  <router-view></router-view>
+  <div class="app">
+    <DefaultHeader/>
+    <div class="app-body">
+      <AppSidebar fixed>
+        <SidebarHeader/>
+        <SidebarForm/>
+        <SidebarNav :navItems="nav"></SidebarNav>
+        <SidebarFooter/>
+        <SidebarMinimizer/>
+      </AppSidebar>
+      <main class="main">
+        <Breadcrumb :list="breadCrumbs"/>
+        <div class="container-fluid">
+          <router-view></router-view>
+        </div>
+      </main>
+      <AppAside fixed>
+        <!--aside-->
+        <DefaultAside/>
+      </AppAside>
+    </div>
+    <DefaultFooter/>
+  </div>
 </template>
 
 <script>
+import nav from '@/_nav'
+import { Sidebar as AppSidebar, SidebarFooter, SidebarForm, SidebarHeader, SidebarMinimizer, SidebarNav, Aside as AppAside, Breadcrumb } from '@coreui/vue'
+import DefaultAside from '@/components/containers/DefaultAside'
+import DefaultHeaderDropdownAccnt from '@/components/containers/DefaultHeaderDropdownAccnt'
+import DefaultHeader from '@/components/containers/DefaultHeader'
+import DefaultFooter from '@/components/containers/DefaultFooter'
+
 export default {
   name: 'app',
-  data: () => {
+  components: {
+    AppSidebar,
+    AppAside,
+    Breadcrumb,
+    DefaultAside,
+    DefaultHeaderDropdownAccnt,
+    SidebarForm,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarNav,
+    SidebarMinimizer,
+    DefaultFooter,
+    DefaultHeader
+  },
+  data() {
     return {
-      info: 1
+      nav: nav.items
     }
   },
   created() {
     this.initialize()
   },
+  computed: {
+    name() {
+      return this.$route.name
+    },
+    breadCrumbs() {
+      return this.$route.matched.filter((route) => route.name || route.meta.label)
+    }
+  },
   methods: {
     initialize() {
-      this.$store.dispatch('network/initialize')
+      this.$store.dispatch('initialize')
           .catch(error => console.log(error))
     },
     uninitialize() {

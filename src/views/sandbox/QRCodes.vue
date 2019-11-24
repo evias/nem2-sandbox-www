@@ -2,20 +2,25 @@
   <div class="animated fadeIn">
     <b-row>
       <b-col md="6">
-        <b-card no-body>
-          <div slot="header">
-            <i class='fa fa-user'></i> Add Contact QR
-            <div class="card-header-actions">
+        <Card
+            class="card-f card-full-width"
+            :loading="loadingContactQR"
+        >
+          <template #title>
+            <div><i class='fa fa-user'></i> Add Contact QR</div>
+          </template>
+          <template #control>
+            <div>
               <b-link href="#" class="card-header-action btn-setting">
                 <i class="icon-refresh"></i>
               </b-link>
-              <b-link class="card-header-action btn-minimize" v-b-toggle.collapse1>
+              <b-link class="card-header-action btn-minimize" v-b-toggle.collapseContact>
                 <i class="icon-arrow-up"></i>
               </b-link>
             </div>
-          </div>
-          <b-collapse id="collapse1" visible>
-            <b-card-body>
+          </template>
+          <template #body>
+            <b-collapse id="collapseContact" visible>
               <b-row>
                 <b-col md="6">
                   <img v-bind="{ src: contactQR1 }" width=250 />
@@ -32,26 +37,30 @@
                   </p>
                 </b-col>
               </b-row>
-            </b-card-body>
-          </b-collapse>
-        </b-card>
+            </b-collapse>
+          </template>
+        </Card>
       </b-col>
       <b-col md="6">
-        <b-card no-body>
-          <div slot="header">
-            <i class='fa fa-credit-card'></i> Import Private Key QR
-            <div class="card-header-actions">
+        <Card
+            class="card-f card-full-width"
+            :loading="loadingAccountQR"
+        >
+          <template #title>
+            <div><i class='fa fa-user'></i> Export Private Key QR</div>
+          </template>
+          <template #control>
+            <div>
               <b-link href="#" class="card-header-action btn-setting">
                 <i class="icon-refresh"></i>
               </b-link>
-              <b-link class="card-header-action btn-minimize" v-b-toggle.collapse2>
+              <b-link class="card-header-action btn-minimize" v-b-toggle.collapseAccount>
                 <i class="icon-arrow-up"></i>
               </b-link>
             </div>
-          </div>
-          <b-collapse id="collapse2" visible>
-            <b-card-body>
-              
+          </template>
+          <template #body>
+            <b-collapse id="collapseAccount" visible>
               <b-row>
                 <b-col md="6">
                   <img v-bind="{ src: accountQR1 }" width=250 />
@@ -68,27 +77,32 @@
                   </p>
                 </b-col>
               </b-row>
-            </b-card-body>
-          </b-collapse>
-        </b-card>
+            </b-collapse>
+          </template>
+        </Card>
       </b-col>
     </b-row>
     <b-row>
       <b-col md="6">
-        <b-card no-body>
-          <div slot="header">
-            <i class='fa fa-users'></i> Backup Mnemonic QR
-            <div class="card-header-actions">
+        <Card
+            class="card-f card-full-width"
+            :loading="loadingMnemonicQR"
+        >
+          <template #title>
+            <div><i class='fa fa-user'></i> Export Mnemonic QR</div>
+          </template>
+          <template #control>
+            <div>
               <b-link href="#" class="card-header-action btn-setting">
                 <i class="icon-refresh"></i>
               </b-link>
-              <b-link class="card-header-action btn-minimize" v-b-toggle.collapse3>
+              <b-link class="card-header-action btn-minimize" v-b-toggle.collapseMnemonic>
                 <i class="icon-arrow-up"></i>
               </b-link>
             </div>
-          </div>
-          <b-collapse id="collapse3" visible>
-            <b-card-body>
+          </template>
+          <template #body>
+            <b-collapse id="collapseMnemonic" visible>
               <b-row>
                 <b-col md="6">
                   <img v-bind="{ src: mnemonicQR1 }" width=250 />
@@ -107,25 +121,30 @@
                   </p>
                 </b-col>
               </b-row>
-            </b-card-body>
-          </b-collapse>
-        </b-card>
+            </b-collapse>
+          </template>
+        </Card>
       </b-col>
       <b-col md="6">
-        <b-card no-body>
-          <div slot="header">
-            <i class='fa fa-users'></i> Transaction Request QR
-            <div class="card-header-actions">
+        <Card
+            class="card-f card-full-width"
+            :loading="loadingTransactionQR"
+        >
+          <template #title>
+            <div><i class='fa fa-user'></i> Transaction Request QR</div>
+          </template>
+          <template #control>
+            <div>
               <b-link href="#" class="card-header-action btn-setting">
                 <i class="icon-refresh"></i>
               </b-link>
-              <b-link class="card-header-action btn-minimize" v-b-toggle.collapse4>
+              <b-link class="card-header-action btn-minimize" v-b-toggle.collapseTransaction>
                 <i class="icon-arrow-up"></i>
               </b-link>
             </div>
-          </div>
-          <b-collapse id="collapse4" visible>
-            <b-card-body>
+          </template>
+          <template #body>
+            <b-collapse id="collapseTransaction" visible>
               <b-row>
                 <b-col md="6">
                   <img v-bind="{ src: transactionQR1 }" width=250 />
@@ -142,9 +161,9 @@
                   </p>
                 </b-col>
               </b-row>
-            </b-card-body>
-          </b-collapse>
-        </b-card>
+            </b-collapse>
+          </template>
+        </Card>
       </b-col>
     </b-row>
   </div>
@@ -164,13 +183,16 @@ import {
 } from 'nem2-sdk'
 import { QRCodeGenerator } from 'nem2-qr-library'
 import { ExtendedKey, MnemonicPassPhrase, Network, Wallet } from 'nem2-hd-wallets'
+import Card from '@/components/containers/Card'
 
 export const randomMnemonic1 = MnemonicPassPhrase.createRandom()
 export const randomMnemonic2 = MnemonicPassPhrase.createRandom()
 
 export default {
   name: 'qrcodes',
-  components: {},
+  components: {
+    Card,
+  },
   data: () => {
     return { 
       networkType: NetworkType.MIJIN_TEST,
@@ -182,7 +204,11 @@ export default {
       mnemonicQR1: null,
       mnemonicQR2: null,
       transactionQR1: null,
-      transactionQR2: null
+      transactionQR2: null,
+      isLoadingContactQR: true,
+      isLoadingAccountQR: true,
+      isLoadingMnemonicQR: true,
+      isLoadingTransactionQR: true,
     };
   },
   computed: {
@@ -191,22 +217,67 @@ export default {
     },
     mnemonic2: function() {
       return randomMnemonic2
+    },
+    loadingContactQR: function() {
+      return this.isLoadingContactQR;
+    },
+    loadingAccountQR: function() {
+      return this.isLoadingAccountQR;
+    },
+    loadingMnemonicQR: function() {
+      return this.isLoadingMnemonicQR;
+    },
+    loadingTransactionQR: function() {
+      return this.isLoadingTransactionQR;
     }
   },
-  created() {
+  mounted() {
     this.initQR();
   },
   methods: {
 
-    async initQR() {
-      this.contactQR1 = await this.getContactQR(this.getAccount(1).publicAccount).toBase64().toPromise()
-      this.contactQR2 = await this.getContactQR(this.getAccount(2).publicAccount).toBase64().toPromise()
-      this.accountQR1 = await this.getAccountQR(this.getAccount(1)).toBase64().toPromise()
-      this.accountQR2 = await this.getAccountQR(this.getAccount(2)).toBase64().toPromise()
-      this.mnemonicQR1 = await this.getMnemonicQR(this.mnemonic1).toBase64().toPromise()
-      this.mnemonicQR2 = await this.getMnemonicQR(this.mnemonic2).toBase64().toPromise()
-      this.transactionQR1 = await this.getTransactionQR(1).toBase64().toPromise()
-      this.transactionQR2 = await this.getTransactionQR(2).toBase64().toPromise()
+    initQR() {
+      // example contact QR codes
+      this.getContactQR(this.getAccount(1).publicAccount).toBase64().subscribe((contactQR) => {
+        this.contactQR1 = contactQR;
+        this.isLoadingContactQR = false;
+      });
+
+      this.getContactQR(this.getAccount(2).publicAccount).toBase64().subscribe((contactQR) => {
+        this.contactQR2 = contactQR;
+        this.isLoadingContactQR = false;
+      });
+
+      // example account QR codes
+      this.getAccountQR(this.getAccount(1)).toBase64().subscribe((accountQR) => {
+        this.accountQR1 = accountQR;
+        this.isLoadingAccountQR = false;
+      });
+
+      this.getAccountQR(this.getAccount(2)).toBase64().subscribe((accountQR) => {
+        this.accountQR2 = accountQR;
+        this.isLoadingAccountQR = false;
+      });
+
+      // example mnemonic QR codes
+      this.getMnemonicQR(this.mnemonic1).toBase64().subscribe((mnemonicQR) => {
+        this.mnemonicQR1 = mnemonicQR;
+        this.isLoadingMnemonicQR = false;
+      });
+      this.getMnemonicQR(this.mnemonic2).toBase64().subscribe((mnemonicQR) => {
+        this.mnemonicQR2 = mnemonicQR;
+        this.isLoadingMnemonicQR = false;
+      });
+
+      // example transaction QR codes
+      this.getTransactionQR(1).toBase64().subscribe((transactionQR) => {
+        this.transactionQR1 = transactionQR;
+        this.isLoadingTransactionQR = false;
+      });
+      this.getTransactionQR(2).toBase64().subscribe((transactionQR) => {
+        this.transactionQR2 = transactionQR;
+        this.isLoadingTransactionQR = false;
+      });
     },
 
     getAccount(num) {

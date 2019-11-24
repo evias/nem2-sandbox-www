@@ -43,6 +43,7 @@ export default {
   },
   methods: {
     async switchNode(url) {
+      this.$emit('change', url);
       await this.$store.dispatch('network/setCurrentNode', url)
     }
   }

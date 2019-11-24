@@ -24,7 +24,7 @@
 <script>
 import { Header as AppHeader, SidebarToggler, AsideToggler } from '@coreui/vue'
 import DefaultHeaderDropdownAccnt from './DefaultHeaderDropdownAccnt'
-import ApiNodeSelector from '@/views/components/ApiNodeSelector.vue'
+import ApiNodeSelector from '@/components/nem2/ApiNodeSelector.vue'
 
 export default {
   name: 'DefaultHeader',

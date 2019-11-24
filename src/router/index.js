@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // Containers
-const DefaultContainer = () => import('@/views/containers/DefaultContainer')
+const DefaultContainer = () => import('@/components/containers/DefaultContainer')
 
 // Views
 const Dashboard = () => import('@/views/Dashboard')
@@ -13,10 +13,8 @@ const Accounts = () => import('@/views/accounts/Accounts')
 const Account = () => import('@/views/accounts/Account')
 const QRCodes = () => import('@/views/sandbox/QRCodes')
 const Spammer = () => import('@/views/sandbox/Spammer')
-
-// Views - Pages
-const Page404 = () => import('@/views/pages/Page404')
-const Page500 = () => import('@/views/pages/Page500')
+const Page404 = () => import('@/views/static/Page404')
+const Page500 = () => import('@/views/static/Page500')
 
 Vue.use(Router)
 
@@ -25,7 +23,6 @@ function configRoutes() {
     {
       path: '/',
       redirect: '/dashboard',
-      name: 'Home',
       component: DefaultContainer,
       children: [
         {
