@@ -1,4 +1,6 @@
 
+import {NetworkType} from 'nem2-sdk'
+
 class Helpers {
   static validURL(_str) {
     if (typeof _str === 'string') {
@@ -28,6 +30,21 @@ class Helpers {
   static httpToWsUrl(url) {
     if (this.validURL(url)) {
       return url.replace('http', 'ws')
+    }
+  }
+
+  static networkTypeToName(networkType) {
+    if (networkType === NetworkType.MIJIN_TEST) {
+      return 'MIJIN_TEST'
+    }
+    else if (networkType === NetworkType.MIJIN) {
+      return 'MIJIN'
+    }
+    else if (networkType === NetworkType.TEST_NET) {
+      return 'TEST_NET'
+    }
+    else if (networkType === NetworkType.MAIN_NET) {
+      return 'MAIN_NET'
     }
   }
 }

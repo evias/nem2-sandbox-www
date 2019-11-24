@@ -28,6 +28,8 @@ import {
     TransactionHttp,
 } from 'nem2-sdk'
 
+import Helpers from '../Helpers.js';
+
 let NODE_URL
 let NETWORK_TYPE
 
@@ -39,6 +41,10 @@ export default class CatapultHttp {
 
   static get nodeUrl() {
     return NODE_URL
+  }
+
+  static get websocketUrl() {
+    return Helpers.httpToWsUrl(this.nodeUrl)
   }
 
   static get networkType() {

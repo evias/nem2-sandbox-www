@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex';
 import {
   NetworkType,
 } from 'nem2-sdk'
@@ -60,6 +61,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      networkType: 'network/networkType',
+    })
   },
   created() {},
   methods: {}

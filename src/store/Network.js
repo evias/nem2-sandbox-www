@@ -1,12 +1,15 @@
 import Vue from 'vue';
+import { NetworkType } from 'nem2-sdk';
+
+// internal dependencies
+import CatapultHttp from '../infrastructure/CatapultHttp.js';
+import CatapultWebsocket from '../infrastructure/CatapultWebsocket.js';
 import Helpers from '../Helpers.js';
 
-import CatapultHttp from '../infrastructure/CatapultHttp.js';
-import networkConfig from '../../config/network.conf.json';
-
 import Lock from './Lock.js';
-import { NetworkType } from 'nem2-sdk';
 const AwaitLock = Lock.create();
+
+import networkConfig from '../../config/network.conf.json';
 
 export default {
   namespaced: true,
@@ -17,6 +20,7 @@ export default {
     defaultNode: Helpers.formatUrl(networkConfig.defaultNode.url),
     currentNode: Helpers.formatUrl(networkConfig.defaultNode.url),
     networkType: NetworkType.MIJIN_TEST,
+    isConnected: false,
   },
   mutations: {
     setInitialized: (state, initialized) => { state.initialized = initialized },
@@ -24,7 +28,7 @@ export default {
     currentNode: (state, payload) => {
       if (undefined !== payload) {
         let currentNode = Helpers.formatUrl(payload)
-        let wsEndpoint = Helpers.formatUrl(Helpers.httpToWsUrl(currentNode.url))
+        let wsEndpoint = Helpers.httpToWsUrl(currentNode.url)
         Vue.set(state, 'currentNode', currentNode)
         Vue.set(state, 'wsEndpoint', wsEndpoint)
       }
@@ -46,9 +50,9 @@ export default {
   },
   getters: {
     getInitialized: state => state.initialized,
-    currentNode: state => state.currentNode,
     wsEndpoint: state => state.wsEndpoint,
     networkType: state => state.networkType,
+    currentNode: state => state.currentNode,
     nodes: state => {
       let nodes = [];
 
@@ -70,7 +74,23 @@ export default {
     async initialize({ commit, dispatch, getters }) {
       const callback = async () => {
         const nodeUrl = getters.currentNode.url
-        await CatapultHttp.init(nodeUrl)
+
+        // configure HTTP + Websocket (REST)
+        try {
+          await CatapultHttp.init(nodeUrl)
+          commit('mutate', {key: 'isConnected', value: true})
+        }
+        catch (e) {
+          console.log("Error in Store network/initialize: ", e)
+        }
+
+        //XXX bug in REST with websockets
+        try {
+          await CatapultWebsocket.init(CatapultHttp)
+        }
+        catch (e) {
+          console.log("Error in Store network/initialize: ", e)
+        }
 
         // update store
         commit('networkType', CatapultHttp.networkType)
@@ -84,6 +104,7 @@ export default {
       }
 
       commit('currentNode', currentNodeUrl)
+      commit('mutate', {key: 'isConnected', value: false})
       commit('setInitialized', false)
 
       // reset store

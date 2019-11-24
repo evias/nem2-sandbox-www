@@ -1,6 +1,9 @@
 <template>
   <div>
-    <b-form-select v-model="selected" :options="nodeList" @change="switchNode">
+    <b-form-select v-model="selected" 
+                  :options="nodeList" 
+                  @change="switchNode"
+                  :state="isConnected">
       <template v-slot:first>
         <option :value="null" disabled>-- Please select a node --</option>
       </template>
@@ -25,6 +28,9 @@ export default {
     };
   },
   computed: {
+    isConnected() {
+      return this.$store.getters['network/isConnected'];
+    },
     nodeList() {
       return this.$store.getters['network/nodes'];
     },
