@@ -1,4 +1,5 @@
 {
+  "explorerUrl": "http://explorer.nemtech.network",
   "defaultNode": {
     "protocol": "http",
     "hostname": "test-api-01.us-west-1.nemtech.network",

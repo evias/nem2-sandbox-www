@@ -18,6 +18,7 @@ export default {
     config: networkConfig,
     defaultNode: Helpers.formatUrl(networkConfig.defaultNode.url),
     currentNode: Helpers.formatUrl(networkConfig.defaultNode.url),
+    explorerUrl: networkConfig.explorerUrl,
     networkType: NetworkType.MIJIN_TEST,
     isConnected: false,
   },
@@ -52,6 +53,7 @@ export default {
     wsEndpoint: state => state.wsEndpoint,
     networkType: state => state.networkType,
     currentNode: state => state.currentNode,
+    explorerUrl: state => state.explorerUrl,
     nodes: state => {
       let nodes = [];
 

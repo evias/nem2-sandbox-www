@@ -4,50 +4,17 @@
       <template slot="title">
         <i class='icon-list'></i>
       </template>
-      <b-list-group class="list-group-accent"
-                    v-if="notifications.length">
-        <b-list-group-item class="list-group-item-accent-secondary bg-light text-center font-weight-bold text-muted text-uppercase small">
-          General
-        </b-list-group-item>
-        <b-list-group-item 
-            v-for="notification in notifications"
-            :key="notification.message"
-            :class="{
-              'list-group-item-accent-warning': notification.variant === 'warning',
-              'list-group-item-accent-success': notification.variant === 'success',
-              'list-group-item-accent-danger': notification.variant === 'danger',
-              'list-group-item-accent-info': notification.variant === 'info',
-            }"
-            href="#" 
-            class="list-group-item-divider">
-          <div v-html="notification.message"></div>
-          <small class="text-muted mr-3">
-            <i class="icon-calendar"></i>{{notification.time}}
-          </small>
-        </b-list-group-item>
-      </b-list-group>
 
-      <b-list-group class="list-group-accent">
-        <b-list-group-item class="list-group-item-accent-secondary bg-light text-center font-weight-bold text-muted text-uppercase small">
-          Blocks
-        </b-list-group-item>
-        <b-list-group-item 
-            v-for="notification in blockNotifications"
-            :key="notification.message"
-            :class="{
-              'list-group-item-accent-warning': notification.variant === 'warning',
-              'list-group-item-accent-success': notification.variant === 'success',
-              'list-group-item-accent-danger': notification.variant === 'danger',
-              'list-group-item-accent-info': notification.variant === 'info',
-            }"
-            href="#" 
-            class="list-group-item-divider">
-          <div v-html="notification.message"></div>
-          <small class="text-muted mr-3">
-            <i class="icon-calendar"></i>{{notification.time}}
-          </small>
-        </b-list-group-item>
-      </b-list-group>
+      <NotificationStream :event="'addNotification'">
+        <template #title>General</template>
+      </NotificationStream>
+
+      <NotificationStream :event="'newBlock'">
+        <template v-slot:title="titleProps">Blocks</template>
+        <template v-slot:item="itemProps">
+          <BlockNotification :notification="itemProps.notification" />
+        </template>
+      </NotificationStream>
     </b-tab>
     <b-tab>
       <template slot="title">
@@ -95,40 +62,24 @@
 import { Switch as cSwitch } from '@coreui/vue'
 
 // internal dependencies
+import NotificationStream from '@/components/notifiers/NotificationStream'
+import BlockNotification from '@/components/notifiers/BlockNotification'
+import GenericNotification from '@/components/notifiers/GenericNotification'
 import { eventBus } from '../../main'
 import Helpers from '../../Helpers'
 
 export default {
   name: 'NotificationSidebar',
   components: {
-    cSwitch
+    cSwitch,
+    NotificationStream,
+    GenericNotification,
+    BlockNotification,
   },
   data() {
     return {
-      notifications: [],
-      blockNotifications: [],
+      info: 1
     }
-  },
-  created() {
-    eventBus.$on('addNotification', (message, variant) => {
-      this.notifications.unshift({
-        variant,
-        message,
-        time: timestampToTime((new Date()).valueOf())
-      })
-    })
-
-    eventBus.$on('newBlock', block => {
-      this.blockNotifications.unshift({
-        variant: 'success',
-        message: 'New block added: <strong>#' + block.height.compact() + '</strong>',
-        time: Helpers.timestampToTime(block.timestamp.compact())
-      })
-
-      if (this.blockNotifications.length > 5) {
-        this.blockNotifications.pop();
-      }
-    })
   }
 }
 </script>
