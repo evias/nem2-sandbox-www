@@ -1,33 +1,52 @@
 <template>
   <div>
-    <b-form-select v-model="selected" 
-                  :options="nodeList" 
-                  @change="switchNode"
-                  :state="isConnected">
+    <v-select v-model="selected"
+              :options="nodeList"
+              @input="switchNode"
+              :state="isConnected">
       <template v-slot:first>
         <option :value="null" disabled>-- Please select a node --</option>
       </template>
-    </b-form-select>
+    </v-select>
   </div>
 </template>
 
 <script>
-import {
-  NetworkType,
-} from 'nem2-sdk';
+import {mapGetters} from 'vuex';
+import {NetworkType} from 'nem2-sdk';
+import VSelect from '@alfsnd/vue-bootstrap-select'
 
+// internal dependencies
+import Helpers from '../../Helpers'
 import networkConfig from '../../../config/network.conf.json';
 
 export default {
-  name: 'api-node-selector',
+  name: 'ApiNodeSelector',
+  components: {
+    VSelect,
+  },
+  props: {
+    default: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
-      selected: networkConfig.defaultNode.url,
+      selected: { 
+        text: networkConfig.defaultNode.label,
+        value: networkConfig.defaultNode.url
+      },
       options: [],
       config: networkConfig,
+      numSelections: 0,
+      dirty: false,
     };
   },
   computed: {
+    ...mapGetters({
+      networkType: 'network/networkType',
+    }),
     isConnected() {
       return this.$store.getters['network/isConnected'];
     },
@@ -35,16 +54,50 @@ export default {
       return this.$store.getters['network/nodes'];
     },
     currentNode() {
-      return this.$store.getters['network/currentNode'];
+      const currentNode = this.$store.getters['network/currentNode'];
+      if (!currentNode || !currentNode.length) {
+        return this.default.length ? Helpers.formatUrl(this.default) : this.config.defaultNode
+      }
+
+      return currentNode
     }
   },
-  created() {
-    this.selected = this.currentNode;
+  async created() {
+    await this.$store.dispatch('network/initialize')
+    this.selected = { 
+        text: '(' + this.networkName(this.networkType) + ') ' + this.currentNode.url,
+        value: this.currentNode.url
+      };
   },
   methods: {
     async switchNode(url) {
-      this.$emit('change', url);
-      await this.$store.dispatch('network/setCurrentNode', url)
+      // fix for v-select which emits `input` even for *default* value.
+      if (this.numSelections >= 1 && this.dirty === true) {
+        this.$emit('changed', url);
+        await this.$store.dispatch('network/setCurrentNode', url.value ? url.value : url)
+        this.dirty = false
+      }
+      else if (this.numSelections >= 1) {
+        this.dirty = true
+      }
+
+      ++this.numSelections
+    },
+    networkName(networkType) {
+      switch(networkType) {
+        default:
+        case NetworkType.MIJIN_TEST:
+          return 'mijinTest'
+
+        case NetworkType.MIJIN:
+          return 'mijin'
+
+        case NetworkType.TEST_NET:
+          return 'publicTest'
+
+        case NetworkType.MAIN_NET:
+          return 'public'
+      }
     }
   }
 }

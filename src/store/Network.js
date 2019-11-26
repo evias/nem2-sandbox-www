@@ -75,6 +75,7 @@ export default {
     async initialize({ commit, dispatch, getters }) {
       const callback = async () => {
         const nodeUrl = getters.currentNode.url
+        console.log('action: network/initialize with current node: ', nodeUrl)
 
         // configure HTTP + Websocket (REST)
         try {
@@ -93,6 +94,7 @@ export default {
       await AwaitLock.initialize(callback, commit, dispatch, getters)
     },
     async setCurrentNode({ commit, dispatch }, currentNodeUrl) {
+      console.log('action: network/setCurrentNode with new node: ', currentNodeUrl)
       if (!Helpers.validURL(currentNodeUrl)) {
         throw Error('Cannot change node. URL is not valid: ' + currentNodeUrl)
       }
@@ -107,6 +109,7 @@ export default {
     },
     async uninitialize({ commit, dispatch, getters }) {
       const callback = async () => {
+        console.log('action: network/uninitialize')
         commit('setInitialized', false)
       }
       await AwaitLock.uninitialize(callback, commit, dispatch, getters)

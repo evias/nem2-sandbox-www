@@ -17,7 +17,7 @@ export default {
   props: {
     notification: {
       type: Object,
-      default: { message: '', time: '' }
+      default: { variant: 'info', message: '', time: '' }
     }
   }
 }

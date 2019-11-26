@@ -1,6 +1,7 @@
 {
   "explorerUrl": "http://explorer.nemtech.network",
   "defaultNode": {
+    "label": "(publicTest) http://test-api-01.us-west-1.nemtech.network:3000",
     "protocol": "http",
     "hostname": "test-api-01.us-west-1.nemtech.network",
     "port": 3000,

@@ -100,31 +100,49 @@ export default {
 /**
  * REST API
  */
-    fetchTransactions({dispatch}, address, pageSize, fromId) {
+    fetchTransactions({dispatch, emit}, address, pageSize, fromId) {
       if (!address || !address.length === 40) {
         return ;
       }
 
-      const queryParams = new QueryParams(pageSize, fromId)
-      const nemAddress = Address.createFromRawAddress(address)
-      CatapultHttp.accountHttp.getAccountTransactions(nemAddress, queryParams)
-                  .subscribe((transactions) => {
-        transactions.map((transaction) => dispatch('addTransaction', {
-          group: 'confirmed',
-          transaction
-        }))
-      })
+      try {
+        const queryParams = new QueryParams(pageSize, fromId)
+        const nemAddress = Address.createFromRawAddress(address)
+        CatapultHttp.accountHttp.getAccountTransactions(nemAddress, queryParams)
+                    .subscribe((transactions) => {
+          transactions.map((transaction) => dispatch('addTransaction', {
+            group: 'confirmed',
+            transaction
+          }))
+        })
+      }
+      catch (e) {
+        emit('addNotification', {
+          variant: 'danger',
+          message: 'An error happened while trying to fetch transactions: <pre>' + e + '</pre>',
+          time: (new Date()).valueOf()
+        })
+      }
     },
-    fetchInfo({commit}, address) {
+    fetchInfo({commit, emit}, address) {
       if (!address || !address.length === 40) {
         return ;
       }
 
-      const nemAddress = Address.createFromRawAddress(address)
-      CatapultHttp.accountHttp.getAccountInfo(nemAddress)
-                  .subscribe((accountInfo) => {
-        return commit('mutate', {key: 'accountInfo', value: accountInfo});
-      })
+      try {
+        const nemAddress = Address.createFromRawAddress(address)
+        CatapultHttp.accountHttp.getAccountInfo(nemAddress)
+                    .subscribe((accountInfo) => {
+          return commit('mutate', {key: 'accountInfo', value: accountInfo});
+        })
+      }
+      catch (e) {
+        emit('addNotification', {
+          variant: 'danger',
+          message: 'An error happened while trying to fetch account information: <pre>' + e + '</pre>',
+          time: (new Date()).valueOf()
+        })
+      }
     },
 /**
  * Store API

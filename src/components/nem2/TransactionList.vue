@@ -41,7 +41,7 @@
       </template>
     </Card>
 
-    <!-- Info modal -->
+    <!-- Details modal -->
     <b-modal :id="detailsModal.id"
              :title="detailsModal.title"
              ok-only
