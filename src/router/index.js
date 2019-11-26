@@ -7,8 +7,8 @@ const DefaultContainer = () => import('@/components/containers/DefaultContainer'
 // Views
 const Dashboard = () => import('@/views/Dashboard')
 const Charts = () => import('@/views/Charts')
-const Wallet = () => import('@/views/wallet/Wallet')
-const WalletMonitor = () => import('@/views/wallet/WalletMonitor')
+const WalletInfo = () => import('@/views/wallet/WalletInfo')
+const WalletTransactions = () => import('@/views/wallet/WalletTransactions')
 const Accounts = () => import('@/views/accounts/Accounts')
 const Account = () => import('@/views/accounts/Account')
 const QRCodes = () => import('@/views/sandbox/QRCodes')
@@ -39,37 +39,39 @@ function configRoutes() {
     },
     {
       path: '/wallet',
-      name: 'Wallet',
-      component: DefaultContainer,
+      meta: { label: 'Wallet'},
+      component: {
+        render (c) { return c('router-view') }
+      },
+      children: [ 
+        {
+          path: '',
+          component: WalletInfo
+        },
+        {
+          path: 'transactions',
+          meta: { label: 'Wallet Transactions'},
+          name: 'Transactions',
+          component: WalletTransactions
+        },
+      ]
+    },
+    {
+      path: 'accounts',
+      meta: { label: 'Accounts'},
+      component: {
+        render (c) { return c('router-view') }
+      },
       children: [
         {
-          path: 'balances',
-          name: 'Wallet Balances',
-          component: Wallet
+          path: '',
+          component: Accounts,
         },
         {
-          path: 'monitor',
-          name: 'Wallet Monitor',
-          component: WalletMonitor
-        },
-        {
-          path: 'accounts',
-          meta: { label: 'Accounts'},
-          component: {
-            render (c) { return c('router-view') }
-          },
-          children: [
-            {
-              path: '',
-              component: Accounts,
-            },
-            {
-              path: ':id',
-              meta: { label: 'Account Details'},
-              name: 'Account',
-              component: Account,
-            },
-          ]
+          path: ':id',
+          meta: { label: 'Account Details'},
+          name: 'Account',
+          component: Account,
         },
       ]
     },

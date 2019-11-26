@@ -20,12 +20,12 @@
                 <b-col md="6">
                   <h3>Spammer Account</h3>
 
-                  <account-input :userInput="spammer" />
+                  <AccountInput :userInput="spammer" />
                 </b-col>
                 <b-col md="6">
                   <h3>Recipient Account</h3>
 
-                  <public-account-input :userInput="recipient" />
+                  <PublicAccountInput :userInput="recipient" />
                 </b-col>
               </b-row>
             </b-card-body>

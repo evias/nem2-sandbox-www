@@ -25,6 +25,9 @@ export default class NotificationHandler {
 
       case 'newBlock':
         return NotificationHandler.newBlock
+
+      case 'newConnection':
+        return NotificationHandler.newConnection
     }
   }
 
@@ -43,6 +46,14 @@ export default class NotificationHandler {
       time: Helpers.timestampToTime(block.timestamp.compact()),
       // extra information
       height: block.height.compact()
+    }
+  }
+
+  static newConnection(nodeUrl) {
+    return {
+      variant: 'success',
+      message: 'Node was changed to: ' + nodeUrl,
+      time: Helpers.timestampToTime((new Date()).valueOf()),
     }
   }
 }

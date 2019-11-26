@@ -9,7 +9,9 @@
                     placeholder="Enter an account public key or address"
                     trim
                     :state="isValid"
-                    aria-describedby="input-live-help input-live-feedback"></b-form-input>
+                    aria-describedby="input-live-help input-live-feedback"
+                    @change="setDirty"
+                    @keyup="setDirty"></b-form-input>
     </b-form-group>
 
     <div v-if="isValid">
@@ -38,13 +40,15 @@ import {
 
 // internal deps
 export default {
-  name: 'public-account-input',
+  name: 'PublicAccountInput',
   data() {
     return {
       userInput: '',
       accountAddress: '',
       accountPublicKey: '',
       message: '',
+      dirty: false,
+      latestValid: false,
     };
   },
   computed: {
@@ -56,26 +60,45 @@ export default {
     })
   },
   methods: {
+    setDirty() {
+      this.dirty = true
+    },
     validate() {
+      if (!this.dirty) {
+        return this.latestValid
+      }
+
+      let isValid = false
       if (this.userInput.length === 40 || this.userInput.length === 46) {
+        this.$emit('started', true)
         try {
           const plain = this.userInput.replace(/-/g, '')
           this.accountAddress = plain;
-          return Address.isValidRawAddress(plain);
+          isValid = Address.isValidRawAddress(plain, this.networkType);
         }
         catch (e) {}
       }
       else if (this.userInput.length === 64) {
+        this.$emit('started', true)
         try {
           const pub = PublicAccount.createFromPublicKey(this.userInput, this.networkType)
           this.accountAddress = pub.address.plain();
           this.accountPublicKey = pub.publicKey;
-          return true
+          isValid = true
         }
         catch (e) {}
       }
 
-      return false;
+      if (isValid) {
+        this.$emit('changed', this.accountAddress)
+      }
+      else {
+        this.$emit('errored', this.userInput)
+      }
+
+      this.latestValid = isValid
+      this.dirty = false
+      return isValid;
     }
   }
 }

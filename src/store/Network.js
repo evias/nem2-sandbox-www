@@ -4,7 +4,7 @@ import { NetworkType } from 'nem2-sdk';
 // internal dependencies
 import CatapultHttp from '../infrastructure/CatapultHttp.js';
 import Helpers from '../Helpers.js';
-
+import { eventBus } from '../main'
 import Lock from './Lock.js';
 const AwaitLock = Lock.create();
 
@@ -80,6 +80,7 @@ export default {
         try {
           await CatapultHttp.init(nodeUrl)
           commit('mutate', {key: 'isConnected', value: true})
+          eventBus.$emit('newConnection', nodeUrl);
         }
         catch (e) {
           console.log("Error in Store network/initialize: ", e)

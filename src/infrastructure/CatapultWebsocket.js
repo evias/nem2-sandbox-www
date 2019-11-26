@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Listener} from 'nem2-sdk';
+import {
+  Address,
+  Listener,
+} from 'nem2-sdk';
 
 // internal dependencies
 import { eventBus } from '../main'
@@ -53,5 +56,44 @@ export default class CatapultWebsocket {
       )
 
     return [listener, subscription]
+  }
+
+  static async subscribeTransactions(dispatch, wsEndpoint, address) {
+    if (!address || !address.length) {
+      throw new Error('Invalid address for websocket connection.');
+    }
+
+    const nemAddress = Address.createFromRawAddress(address)
+    const listener = new Listener(wsEndpoint, WebSocket)
+    await listener.open()
+
+    // unconfirmed listeners
+    const unconfirmedAdded = listener
+      .unconfirmedAdded(nemAddress)
+      .subscribe(
+        transaction => this.$store.dispatch('wallet/addTransaction', {group: 'unconfirmed', transaction}),
+        err => console.log(err)
+      )
+
+    const unconfirmedRemoved = listener
+      .unconfirmedRemoved(nemAddress)
+      .subscribe(
+        transaction => this.$store.dispatch('wallet/removeTransaction', {group: 'unconfirmed', transaction}),
+        err => console.log(err)
+      )
+
+    // confirmed listener
+    const confirmed = listener
+      .confirmed(nemAddress)
+      .subscribe(
+        transaction => this.$store.dispatch('wallet/addTransaction', {group: 'confirmed', transaction}),
+        err => console.log(err)
+      )
+
+    return [listener, [
+      unconfirmedAdded,
+      unconfirmedRemoved,
+      confirmed,
+    ]]
   }
 }

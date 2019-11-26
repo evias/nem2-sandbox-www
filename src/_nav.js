@@ -30,18 +30,13 @@ export default {
     },
     {
       name: 'Monitor',
-      url: '/wallet/monitor',
+      url: '/wallet',
       icon: 'icon-chart'
     },
     {
-      name: 'Balances',
-      url: '/wallet/balances',
+      name: 'Transactions',
+      url: '/wallet/transactions',
       icon: 'icon-speedometer',
-    },
-    {
-      name: 'Accounts',
-      url: '/wallet/accounts',
-      icon: 'icon-people'
     },
     {
       title: true,
@@ -88,6 +83,11 @@ export default {
       name: 'Network Spammer',
       url: '/sandbox/spammer',
       icon: 'icon-chart'
+    },
+    {
+      name: 'Accounts',
+      url: '/accounts',
+      icon: 'icon-people'
     },
   ]
 }

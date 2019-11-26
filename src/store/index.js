@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 
 import NetworkStore from './Network.js';
 import ChainStore from './Chain.js';
+import WalletStore from './Wallet.js';
 import Lock from './Lock.js';
 const AwaitLock = Lock.create();
 
@@ -13,11 +14,13 @@ export default new Vuex.Store({
   modules: {
     network: NetworkStore,
     chain: ChainStore,
+    wallet: WalletStore,
   },
   actions: {
     async initialize({ commit, dispatch, getters }) {
       const callback = async () => {
         await dispatch('network/initialize')
+        await dispatch('chain/initialize')
       }
       await AwaitLock.initialize(callback, commit, dispatch, getters)
     },
@@ -26,6 +29,7 @@ export default new Vuex.Store({
       await Promise.all([
         dispatch('network/uninitialize'),
         dispatch('chain/uninitialize'),
+        dispatch('wallet/uninitialize'),
       ])
     }
   }

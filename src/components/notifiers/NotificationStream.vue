@@ -16,6 +16,32 @@
         </slot>
       </b-list-group-item>
     </div>
+
+    <div class="notification-archived text-center"
+         v-if="archivedItems.length && !visibleArchived">
+      <b-link class="card-header-action btn-minimize" @click="visibleArchived = !visibleArchived">
+        <i class="icon-arrow-down"></i>&nbsp;More
+      </b-link>
+    </div>
+
+    <b-collapse id="collapseArchived" v-model="visibleArchived">
+      <b-list-group-item href="#" class="list-group-item-divider"
+        v-for="notification in archivedItems"
+        :key="notification.time" 
+        :class="classByVariant(notification.variant)"
+      >
+        <slot name="item" v-bind:notification="notification">
+          <GenericNotification :notification="notification" />
+        </slot>
+      </b-list-group-item>
+    </b-collapse>
+
+    <div class="notification-archived text-center"
+         v-if="visibleArchived">
+      <b-link class="card-header-action btn-minimize" @click="visibleArchived = !visibleArchived">
+        <i class="icon-arrow-up"></i>&nbsp;Hide archived
+      </b-link>
+    </div>
   </b-list-group>
 </template>
 
@@ -28,6 +54,9 @@ import NotificationHandler from '../../infrastructure/NotificationHandler'
 
 export default {
   name: 'NotificationStream',
+  components: {
+    GenericNotification,
+  },
   props: {
     event: {
       type: String,
@@ -36,7 +65,9 @@ export default {
   },
   data() {
     return {
-      items: []
+      items: [],
+      archivedItems: [],
+      visibleArchived: false,
     }
   },
   computed: {
@@ -57,6 +88,10 @@ export default {
       const response = handler(object, variant)
 
       this.items.unshift({...response})
+
+      if (this.items.length > 5) {
+        this.archivedItems.unshift(this.items.pop());
+      }
     })
   },
   methods: {

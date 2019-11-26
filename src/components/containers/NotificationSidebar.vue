@@ -9,6 +9,10 @@
         <template #title>General</template>
       </NotificationStream>
 
+      <NotificationStream :event="'newConnection'">
+        <template #title>Connections</template>
+      </NotificationStream>
+
       <NotificationStream :event="'newBlock'">
         <template v-slot:title="titleProps">Blocks</template>
         <template v-slot:item="itemProps">

@@ -3,7 +3,7 @@
       class="card-f card-full-width"
   >
     <template #title>
-      <div><i class='fa fa-user'></i> Account Balances</div>
+      <div><i class='fa fa-user'></i> Account Information</div>
     </template>
     <template #control>
       <div>
@@ -14,9 +14,9 @@
     </template>
     <template #body>
       <b-table :hover="true" :striped="false" :bordered="false" :small="false" :fixed="false"
-               :busy="loadingBalances"
+               :stacked="true"
+               :busy="loadingInformation"
                :items="items"
-               :fields="fields"
                @row-clicked="rowClicked"
       >
         <template v-slot:table-busy>
@@ -32,14 +32,13 @@
 
 <script>
 import {mapGetters} from 'vuex';
-import {UInt64} from 'nem2-sdk'
 
 // internal dependencies
 import Card from '@/components/containers/Card'
 import Helpers from '../../Helpers.js'
 
 export default {
-  name: 'MosaicList',
+  name: 'AccountInfo',
   components: {
     Card,
   },
@@ -48,26 +47,14 @@ export default {
       type: String,
       default: ''
     },
+    perPage: {
+      type: Number,
+      default: 10
+    },
   },
   data() {
     return {
-      fields: [
-        {
-          key: 'id',
-          label: 'Mosaic Id',
-          formatter: (value, key, item) => {
-            const id = value.id
-            return (new UInt64([id.lower, id.higher])).toHex()
-          },
-          sortable: true
-        },
-        {
-          key: 'amount',
-          label: 'Balance',
-          sortable: true
-        },
-      ],
-      loadingBalances: true,
+      loadingInformation: true,
     }
   },
   computed: {
@@ -80,14 +67,33 @@ export default {
         return []
       }
 
-      const formattedInfo = (({mosaics}) => ({mosaics}))(accountInfo)
-      return formattedInfo.mosaics
+      const formattedInfo = (({
+        address,
+        addressHeight,
+        publicKey,
+        publicKeyHeight,
+        accountType,
+        linkedAccountKey,
+        importance,
+        importanceHeight,
+      }) => ({
+        address,
+        addressHeight,
+        publicKey,
+        publicKeyHeight,
+        accountType,
+        linkedAccountKey,
+        importance,
+        importanceHeight,
+      }))(accountInfo)
+
+      return [formattedInfo]
     }
   },
   async created() {
-    this.loadingBalances = true
+    this.loadingInformation = true
     if (!this.address || !this.address.length) {
-      this.loadingBalances = false
+      this.loadingInformation = false
       return ;
     }
 
@@ -96,7 +102,7 @@ export default {
 
     // 2) fetch account info
     await this.$store.dispatch('wallet/fetchInfo', this.address)
-    this.loadingBalances = false
+    this.loadingInformation = false
   },
   methods: {
     rowClicked (item) {

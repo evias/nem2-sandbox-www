@@ -35,7 +35,7 @@ import {
 } from 'nem2-sdk';
 
 export default {
-  name: 'account-input',
+  name: 'AccountInput',
   data() {
     return {
       userInput: '',
@@ -49,6 +49,7 @@ export default {
     },
     ...mapGetters({
       networkType: 'network/networkType',
+      currentAddress: 'wallet/currentWalletAddress'
     })
   },
   methods: {
