@@ -30,13 +30,17 @@
           </template>
         </b-table>
         <nav>
-          <b-pagination size="sm" 
-                        :total-rows="getRowCount(items)"
-                        :per-page="perPage"
-                        v-model="currentPage"
-                        prev-text="Prev"
-                        next-text="Next"
-                        hide-goto-end-buttons />
+          <MoreLessPagination :action="'wallet/fetchTransactions'"
+                              :actionParameters="{
+                                address: address,
+                                pageSize: perPage,
+                                id: lastTransactionId
+                              }"
+                              :perPage="perPage"
+                              :rowCount="getRowCount()"
+                              :currentPage="currentPage"
+                              @more-clicked="nextPage()"
+                              @less-clicked="prevPage()" />
         </nav>
       </template>
     </Card>
@@ -56,12 +60,14 @@ import {mapGetters} from 'vuex';
 
 // internal dependencies
 import Card from '@/components/containers/Card'
+import MoreLessPagination from '@/components/controls/MoreLessPagination'
 import Helpers from '../../Helpers.js'
 
 export default {
   name: 'TransactionList',
   components: {
     Card,
+    MoreLessPagination,
   },
   props: {
     address: {
@@ -107,7 +113,6 @@ export default {
         },
       ],
       currentPage: 1,
-      totalRows: 0,
       loadingTransactions: true,
       detailsModal: {
         id: 'transaction-detail-modal',
@@ -122,6 +127,14 @@ export default {
     }),
     items() {
       return this.$store.getters['wallet/confirmedTransactions']
+    },
+    lastTransactionId() {
+      const items = this.items.slice(); // copy-assign
+      if (!items.length) {
+        return null
+      }
+
+      return items.pop().transactionInfo.id
     }
   },
   async created() {
@@ -135,12 +148,16 @@ export default {
     await this.$store.dispatch('wallet/initialize', this.address)
 
     // 2) fetch recent transactions
-    await this.$store.dispatch('wallet/fetchTransactions', this.address, this.perPage, null)
+    await this.$store.dispatch('wallet/fetchTransactions', {
+      address: this.address,
+      pageSize: this.perPage,
+      id: null,
+    })
     this.loadingTransactions = false
   },
   methods: {
-    getRowCount (items) {
-      return items.length
+    getRowCount () {
+      return this.items.length
     },
     openDetailsModal(item, index, button) {
       this.detailsModal.title = `Row index: ${index}`
@@ -151,6 +168,12 @@ export default {
       this.detailsModal.title = ''
       this.detailsModal.content = ''
     },
+    nextPage() {
+      ++this.currentPage
+    },
+    prevPage() {
+      --this.currentPage
+    }
   }
 }
 </script>

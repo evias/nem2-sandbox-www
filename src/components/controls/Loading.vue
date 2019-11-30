@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019-present for NEM
+ * Copyright (c) 2019-present eVias Services for NEM
  *
  * Licensed under the Apache License, Version 2.0 (the "License ");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,6 @@
  */
 <template>
   <div class="box_loader">
-    <!-- <div class="spinner">
-      <div class="rect1"></div>
-      <div class="rect2"></div>
-      <div class="rect3"></div>
-      <div class="rect4"></div>
-    </div>-->
     <div class="spinner">
       <svg viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
         <circle

@@ -1,14 +1,14 @@
 {
-  "name": "@coreui/coreui-free-vue-admin-template",
-  "version": "2.1.5",
-  "description": "Open Source Bootstrap Admin Template",
-  "author": "Łukasz Holeczek",
-  "homepage": "http://coreui.io",
-  "copyright": "Copyright 2018 creativeLabs Łukasz Holeczek",
+  "name": "@evias/nem2-vue-components",
+  "version": "0.1.0",
+  "description": "Catapult UI components library for Vue",
+  "author": "Gregory Saive",
+  "homepage": "https://evias.be",
+  "copyright": "Copyright 2019-present eVias Services",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:coreui/coreui-free-vue-admin-template.git"
+    "url": "git@github.com:evias/nem2-vue-components.git"
   },
   "scripts": {
     "serve": "vue-cli-service serve",

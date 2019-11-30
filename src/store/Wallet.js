@@ -1,7 +1,10 @@
 import Vue from 'vue';
 import {
   Address,
+  Convert,
   QueryParams,
+  SHA3Hasher,
+  SignSchema,
 } from 'nem2-sdk'
 
 // internal dependencies
@@ -17,10 +20,12 @@ export default {
     initialized: false,
     currentAddress: '',
     allTransactions: [],
+    transactionHashes: [],
     confirmedTransactions: [],
     unconfirmedTransactions: [],
     partialTransactions: [],
     accountInfo: null,
+    transactionCache: {},
     // Subscription to transactions.
     subscriptions: [],
   },
@@ -28,11 +33,23 @@ export default {
     setInitialized: (state, initialized) => { state.initialized = initialized },
     mutate: (state, { key, value }) => Vue.set(state, key, value),
     currentWalletAddress: (state, newAddress) => Vue.set(state, 'currentAddress', newAddress),
+    addTransactionToCache: (state, payload) => {
+      if (payload === undefined) {
+        return ;
+      }
+
+      const cache = state.transactionCache
+      const hash  = payload.hash
+      cache[hash] = payload.transaction
+      Vue.set(state, 'transactionCache', cache)
+      return cache
+    } 
   },
   getters: {
     getInitialized: state => state.initialized,
     currentWalletAddress: state => state.currentAddress,
     getSubscriptions: state => state.subscriptions,
+    transactionHashes: state => state.transactionHashes,
     confirmedTransactions: state => state.confirmedTransactions,
     unconfirmedTransactions: state => state.unconfirmedTransactions,
     partialTransactions: state => state.partialTransactions,
@@ -44,6 +61,7 @@ export default {
       )
     },
     accountInfo: state => state.accountInfo,
+    transactionCache: state => state.transactionCache,
   },
   actions: {
     async initialize({ commit, dispatch, getters }, address) {
@@ -100,18 +118,38 @@ export default {
 /**
  * REST API
  */
-    fetchTransactions({dispatch, emit}, address, pageSize, fromId) {
+    fetchTransactions({dispatch, emit, getters}, {address, pageSize, id}) {
+
+      console.log("Paging transactions for ", address)
+      console.log("Paging transactions: ", pageSize, id)
+
       if (!address || !address.length === 40) {
         return ;
       }
 
+      // create hash of query parameters
+      const query  = [address, pageSize, id].join(',')
+      const hash   = new Uint8Array(64)
+      const hasher = SHA3Hasher.createHasher(64, SignSchema.SHA3)
+      hasher.reset()
+      hasher.update(Buffer.from(query))
+      hasher.finalize(hash)
+
+      // check query cache for results
+      const cacheKey = Convert.uint8ToHex(hash)
+      const cache = getters['transactionCache']
+      if (cache.hasOwnProperty(cacheKey)) {
+        return cache[cacheKey]
+      }
+
       try {
-        const queryParams = new QueryParams(pageSize, fromId)
+        const queryParams = new QueryParams(pageSize, id)
         const nemAddress = Address.createFromRawAddress(address)
         CatapultHttp.accountHttp.getAccountTransactions(nemAddress, queryParams)
                     .subscribe((transactions) => {
           transactions.map((transaction) => dispatch('addTransaction', {
             group: 'confirmed',
+            cacheKey: cacheKey,
             transaction
           }))
         })
@@ -157,30 +195,37 @@ export default {
         throw Error('Wallet.addTransaction requires a transaction group.')
       }
 
-      let transactions = []
       let transactionGroup = '';
       const transaction = transactionMessage.transaction
       switch (transactionMessage.group.toLowerCase()) {
         default:
           throw Error('Wallet.addTransaction requires a transaction group.')
+          
+          case 'unconfirmed':
+            case 'confirmed':
+              case 'partial':
+                transactionGroup = transactionMessage.group.toLowerCase() + 'Transactions'
+                break;
+              }
 
-        case 'unconfirmed':
-        case 'confirmed':
-        case 'partial':
-          transactionGroup = transactionMessage.group.toLowerCase() + 'Transactions'
-          break;
+      const hashes = getters['transactionHashes']
+      const findIterator = hashes.find(hash => hash === transaction.transactionInfo.hash)
+      if (findIterator !== undefined) {
+        return ; // transaction already known
       }
 
+      let transactions = []
       transactions = getters[transactionGroup]
       transactions.push(transaction)
-      return commit('mutate', {key: transactionGroup, value: transactions})
+      hashes.push(transaction.transactionInfo.hash)
+      commit('mutate', {key: transactionGroup, value: transactions})
+      return commit('mutate', {key: 'transactionHashes', value: hashes})
     },
     removeTransaction({commit, getters}, transactionMessage) {
       if (!transactionMessage || !transactionMessage.group) {
         throw Error('Wallet.addTransaction requires a transaction group.')
       }
 
-      let transactions = []
       let transactionGroup = '';
       switch (transactionMessage.group.toLowerCase()) {
         default:
@@ -193,17 +238,24 @@ export default {
           break;
       }
 
+      // read info
       const transaction = transactionMessage.transaction
       const transactionHash = transaction.meta.hash
-      transactions = getters[transactionGroup]
 
+      // find transaction in storage
+      let transactions = []
+      const hashes = getters['transactionHashes']
+      transactions = getters[transactionGroup]
+      const findHashIt = hashes.find(hash => hash === transactionHash)
       const findIterator = transactions.find(tx => tx.meta.hash === transactionHash)
       if (findIterator === undefined) {
         return ;
       }
-  
+
       delete transactions[findIterator]
-      return commit('mutate', {key: transactionGroup, value: transactions})
+      delete hashes[findHashIt]
+      commit('mutate', {key: transactionGroup, value: transactions})
+      return commit('mutate', {key: 'transactionHashes', value: hashes})
     },
   }
 };
