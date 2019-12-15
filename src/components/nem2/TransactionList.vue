@@ -21,11 +21,25 @@
                 :current-page="currentPage"
                 :per-page="perPage"
                 @row-clicked="openDetailsModal"
+                show-empty
+                :filter="filter"
+                :filterIncludedFields="filterWith"
+                @filtered="onFiltered"
         >
           <template v-slot:table-busy>
             <div class="text-center text-danger my-2">
               <b-spinner class="align-middle"></b-spinner>
               <strong>Loading...</strong>
+            </div>
+          </template>
+          <template v-slot:empty="scope">
+            <div class="text-center text-danger my-2">
+              <strong>No transactions found for account with address {{address}}</strong>
+            </div>
+          </template>
+          <template v-slot:emptyfiltered="scope">
+            <div class="text-center text-danger my-2">
+              <strong>No transactions found with filter: </strong>
             </div>
           </template>
         </b-table>
@@ -118,7 +132,10 @@ export default {
         id: 'transaction-detail-modal',
         title: '',
         content: ''
-      }
+      },
+      filter: null,
+      filterWith: [],
+      filteredRowCount: -1,
     }
   },
   computed: {
@@ -148,16 +165,22 @@ export default {
     await this.$store.dispatch('wallet/initialize', this.address)
 
     // 2) fetch recent transactions
-    await this.$store.dispatch('wallet/fetchTransactions', {
+    const transactions = await this.$store.dispatch('wallet/fetchTransactions', {
+      emitter: (channel, message) => this.$emit(channel, {
+        variant: 'danger',
+        message: message,
+        time: (new Date()).valueOf()
+      }),
       address: this.address,
       pageSize: this.perPage,
       id: null,
     })
+
     this.loadingTransactions = false
   },
   methods: {
     getRowCount () {
-      return this.items.length
+      return this.filteredRowCount !== -1 ? this.filteredRowCount : this.items.length
     },
     openDetailsModal(item, index, button) {
       this.detailsModal.title = `Row index: ${index}`
@@ -173,6 +196,11 @@ export default {
     },
     prevPage() {
       --this.currentPage
+    },
+    onFiltered(filteredItems) {
+      // Trigger pagination to update the number of buttons/pages due to filtering
+      this.filteredRowCount = filteredItems.length
+      this.currentPage = 1
     }
   }
 }

@@ -17,10 +17,11 @@
             </div>
           </template>
           <template #body>
-            <PublicAccountInput :userInput="walletInput" 
-                                @started="setLoading(true)"
+            <PublicAccountInput v-model="walletInput"
+                                ref="walletInput"
+                                @input="setLoading(true)"
                                 @changed="setAddress"
-                                @errored="setLoading(false)" />
+                                @error="setLoading(false)" />
           </template>
         </Card>
       </b-col>
@@ -63,6 +64,9 @@ export default {
   },
   async mounted() {
     await this.$store.dispatch('initialize')
+  },
+  created() {
+    this.$refs.walletInput.focus()
   },
   methods: {
     setAddress(address) {

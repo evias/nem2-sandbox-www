@@ -118,10 +118,7 @@ export default {
 /**
  * REST API
  */
-    fetchTransactions({dispatch, emit, getters}, {address, pageSize, id}) {
-
-      console.log("Paging transactions for ", address)
-      console.log("Paging transactions: ", pageSize, id)
+    async fetchTransactions({dispatch, getters}, {emitter, address, pageSize, id}) {
 
       if (!address || !address.length === 40) {
         return ;
@@ -145,41 +142,43 @@ export default {
       try {
         const queryParams = new QueryParams(pageSize, id)
         const nemAddress = Address.createFromRawAddress(address)
-        CatapultHttp.accountHttp.getAccountTransactions(nemAddress, queryParams)
-                    .subscribe((transactions) => {
-          transactions.map((transaction) => dispatch('addTransaction', {
-            group: 'confirmed',
-            cacheKey: cacheKey,
-            transaction
-          }))
-        })
+        const transactions = await CatapultHttp.accountHttp
+                                                .getAccountTransactions(nemAddress, queryParams).toPromise()
+
+        // group transaction + cache
+        transactions.map((transaction) => dispatch('addTransaction', {
+          group: 'confirmed',
+          cacheKey: cacheKey,
+          transaction
+        }))
+
+        return transactions
       }
       catch (e) {
-        emit('addNotification', {
-          variant: 'danger',
-          message: 'An error happened while trying to fetch transactions: <pre>' + e + '</pre>',
-          time: (new Date()).valueOf()
-        })
+        emitter(
+          'addNotification',
+          'An error happened while trying to fetch transactions: <pre>' + e + '</pre>')
+
+        return false
       }
     },
-    fetchInfo({commit, emit}, address) {
+    async fetchInfo({commit}, {emitter, address}) {
       if (!address || !address.length === 40) {
         return ;
       }
 
       try {
         const nemAddress = Address.createFromRawAddress(address)
-        CatapultHttp.accountHttp.getAccountInfo(nemAddress)
-                    .subscribe((accountInfo) => {
-          return commit('mutate', {key: 'accountInfo', value: accountInfo});
-        })
+        const accountInfo = await CatapultHttp.accountHttp.getAccountInfo(nemAddress).toPromise()
+
+        return commit('mutate', {key: 'accountInfo', value: accountInfo});
       }
       catch (e) {
-        emit('addNotification', {
-          variant: 'danger',
-          message: 'An error happened while trying to fetch account information: <pre>' + e + '</pre>',
-          time: (new Date()).valueOf()
-        })
+        emitter(
+          'addNotification',
+          'An error happened while trying to fetch account information: <pre>' + e + '</pre>')
+
+        return false
       }
     },
 /**
@@ -200,13 +199,13 @@ export default {
       switch (transactionMessage.group.toLowerCase()) {
         default:
           throw Error('Wallet.addTransaction requires a transaction group.')
-          
-          case 'unconfirmed':
-            case 'confirmed':
-              case 'partial':
-                transactionGroup = transactionMessage.group.toLowerCase() + 'Transactions'
-                break;
-              }
+
+        case 'unconfirmed':
+        case 'confirmed':
+        case 'partial':
+          transactionGroup = transactionMessage.group.toLowerCase() + 'Transactions'
+        break;
+      }
 
       const hashes = getters['transactionHashes']
       const findIterator = hashes.find(hash => hash === transaction.transactionInfo.hash)

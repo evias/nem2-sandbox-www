@@ -5,13 +5,13 @@
                   label-for="public-account-input"
                   :invalid-feedback="'Enter one of Address or Public Key'"
                   :state="isValid">
-      <b-form-input v-model="userInput"
+      <b-form-input v-bind:value="value"
+                    v-on:input="onInput"
+                    ref="input"
                     placeholder="Enter an account public key or address"
                     trim
                     :state="isValid"
-                    aria-describedby="input-live-help input-live-feedback"
-                    @change="setDirty"
-                    @keyup="setDirty"></b-form-input>
+                    aria-describedby="input-live-help input-live-feedback"></b-form-input>
     </b-form-group>
 
     <div v-if="isValid">
@@ -41,9 +41,15 @@ import {
 // internal deps
 export default {
   name: 'PublicAccountInput',
+  props: {
+    value: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
-      userInput: '',
+      value: '',
       accountAddress: '',
       accountPublicKey: '',
       message: '',
@@ -53,14 +59,20 @@ export default {
   },
   computed: {
     isValid() {
-      return !this.userInput.length ? null : this.validate();
+      return this.dirty === true ? this.validate() : (
+           this.value.length ? this.latestValid : null
+      );
     },
     ...mapGetters({
       networkType: 'network/networkType'
     })
   },
   methods: {
-    setDirty() {
+    focus: function () {
+      this.$refs.input.focus()
+    },
+    onInput() {
+      this.$emit('input', $event.target.value)
       this.dirty = true
     },
     validate() {
@@ -69,19 +81,17 @@ export default {
       }
 
       let isValid = false
-      if (this.userInput.length === 40 || this.userInput.length === 46) {
-        this.$emit('started', true)
+      if (this.value.length === 40 || this.value.length === 46) {
         try {
-          const plain = this.userInput.replace(/-/g, '')
+          const plain = this.value.replace(/-/g, '')
           this.accountAddress = plain;
           isValid = Address.isValidRawAddress(plain, this.networkType);
         }
         catch (e) {}
       }
-      else if (this.userInput.length === 64) {
-        this.$emit('started', true)
+      else if (this.value.length === 64) {
         try {
-          const pub = PublicAccount.createFromPublicKey(this.userInput, this.networkType)
+          const pub = PublicAccount.createFromPublicKey(this.value, this.networkType)
           this.accountAddress = pub.address.plain();
           this.accountPublicKey = pub.publicKey;
           isValid = true
@@ -91,9 +101,8 @@ export default {
 
       if (isValid) {
         this.$emit('changed', this.accountAddress)
-      }
-      else {
-        this.$emit('errored', this.userInput)
+      } else {
+        this.$emit('error', this.value)
       }
 
       this.latestValid = isValid
