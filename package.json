@@ -33,7 +33,7 @@
     "css-vars-ponyfill": "^2.0.2",
     "flag-icon-css": "^3.3.0",
     "font-awesome": "^4.7.0",
-    "lodash": "4.17.15",
+    "lodash": "4.17.21",
     "moment-timezone": "^0.5.26",
     "nem2-hd-wallets": "^0.6.0",
     "nem2-qr-library": "^0.6.0",
